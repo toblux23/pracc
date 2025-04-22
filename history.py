@@ -6,24 +6,32 @@ import threading
 
 app = fastapi.FastAPI()
 
-# Kafka Configuration
+
 KAFKA_URL = "localhost:9092"
 TOPIC = "notifications"
 
-# Store for reservation events
+
+
+
 reservations = []
 
-def consume_messages():
+def consume_messages():    
+    
     consumer = KafkaConsumer(
         TOPIC,
         bootstrap_servers=KAFKA_URL
     )
     
     for message in consumer:
+
+        consumer = KafkaConsumer(
+        TOPIC,
+        bootstrap_servers=KAFKA_URL
+    )
         try:
             data = json.loads(message.value.decode('utf-8'))
             if data.get("type") == "reservation":
-                # Store all reservation details
+
                 reservation = {
                     "timestamp": data.get("timestamp"),
                     "spot_id": data.get("spot_id"),
@@ -36,7 +44,7 @@ def consume_messages():
         except Exception as e:
             print(f"Error processing message: {e}")
 
-# Start Kafka consumer in a separate thread
+
 consumer_thread = threading.Thread(target=consume_messages, daemon=True)
 consumer_thread.start()
 

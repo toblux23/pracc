@@ -7,12 +7,12 @@ import requests
 
 app = fastapi.FastAPI()
 
-# Kafka Configuration
+
 KAFKA_URL = "localhost:9092"
 TOPIC = "parking-spaces"
 TOPIC_NOTIFICATIONS = "notifications"
 
-# Initialize Kafka producer
+
 producer = KafkaProducer(
     bootstrap_servers=[KAFKA_URL]
 )
@@ -34,12 +34,12 @@ def create_reservation(user_id: str, spot_id: str, payment_type: str):
         if not spot_available:
             raise HTTPException(status_code=400, detail="Parking spot is not available")
             
-        # Process payment through payment service
+        
         payment_response = requests.post(
             "http://localhost:5003/payments",
             params={
                 "user_id": user_id,
-                "amount": 10.00,  # Fixed amount for now
+                "amount": 10.00, 
                 "payment_type": payment_type
             }
         )
@@ -63,10 +63,10 @@ def create_reservation(user_id: str, spot_id: str, payment_type: str):
             "payment_type": payment_type
         }
         
-        # Send reservation event to Kafka
+        
         producer.send(TOPIC, json.dumps(reservation).encode())
         
-        # Send notification
+        
         notification = {
             "type": "reservation",
             "timestamp": datetime.now().isoformat(),

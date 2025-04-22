@@ -6,17 +6,16 @@ from datetime import datetime
 
 app = fastapi.FastAPI()
 
-# Kafka Configuration
+
 KAFKA_URL = "localhost:9092"
 TOPIC = "parking-spaces"
 TOPIC_NOTIFICATIONS = "notifications"
 
-# Initialize Kafka producer
+
 producer = KafkaProducer(
     bootstrap_servers=[KAFKA_URL]
 )
 
-# Parking spots data
 parking_spots = {
     "P1": {"status": "available", "user_id": None},
     "P2": {"status": "available", "user_id": None},
@@ -52,7 +51,6 @@ def update_spot(spot_id: str, status: str, user_id: str = None):
     parking_spots[spot_id]["status"] = status
     parking_spots[spot_id]["user_id"] = user_id
     
-    # Send to parking-spaces topic
     message = {
         "type": "spot_update",
         "timestamp": datetime.now().isoformat(),
@@ -62,7 +60,7 @@ def update_spot(spot_id: str, status: str, user_id: str = None):
     }
     producer.send(TOPIC, json.dumps(message).encode())
     
-    # Send notification
+    
     notification = {
         "type": "spot_update",
         "timestamp": datetime.now().isoformat(),
